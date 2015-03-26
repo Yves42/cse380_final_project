@@ -13,9 +13,11 @@
 		
 BASE EQU 0x40000000
 	
-prompt = "Welcome to lab #6",10
+prompt 		= "Welcome to lab #6",10
 	ALIGN
-the_board = "|---------------|\n|               |\n|               |\n|               |\n|               |\n|               |\n|               |\n|               |\n|       *       |\n|               |\n|               |\n|               |\n|               |\n|               |\n|               |\n|               |\n|---------------|"
+score		= "score : ",10
+	ALIGN	
+the_board 	= "|---------------|\n|               |\n|               |\n|               |\n|               |\n|               |\n|               |\n|               |\n|       *       |\n|               |\n|               |\n|               |\n|               |\n|               |\n|               |\n|               |\n|---------------|"
 	ALIGN	
 
 lab6
@@ -43,24 +45,26 @@ lab6
 interrupt_init
 	stmfd sp!, {r4 - r12, lr}
 	
-	ldr r4, =0xFFFFF010 ;interrupt enable register	(VICIntEnable)
+	ldr r4, =0xFFFFF010 	;interrupt enable register	(VICIntEnable)
 	ldr r5, [r4]
-	orr r5, r5, #0x30		;enable bits 4 and 5 for timers 0 & 1
+	orr r5, r5, #0x10		;enable bit 4 for timer 0
+	orr r5, r5, #0x20		;enable bit 5 for timer 1
 	orr r5, r5, #0x40		;enable bit 6 for uart0 interrupt
-	str r5, [r4]	;store back to enable register
+	str r5, [r4]			;store back to enable register
 	
-	ldr r4, =0xFFFFF00C ; intterupt select register (VICIntSelect)
+	ldr r4, =0xFFFFF00C 	; intterupt select register (VICIntSelect)
 	ldr r5, [r4]
-	orr r5, r5, #0x30		;enable bits 4 and 5 for fast interrupts
+	orr r5, r5, #0x10		;enable bit 4 for timer 0
+	orr r5, r5, #0x20		;enable bit 5 for timer 1
 	orr r5, r5, #0x40		;enable bit 6 for fast interrupt
-	str r5, [r4]	;store back to select register
+	str r5, [r4]			;store back to select register
 
-	ldr r4, =0xE000C004	;enable uart interrupt read_data_available
+	ldr r4, =0xE000C004		;enable uart interrupt read_data_available
 	ldr r5, [r4]
 	orr r5, r5, #1
 	str r5, [r4]
 	
-	MRS r0, CPSR	; Enable FIQ's, Disable IRQ's
+	MRS r0, CPSR			; Enable FIQ's, Disable IRQ's
 	BIC r0, r0, #0x40
 	ORR r0, r0, #0x80
 	MSR CPSR_c, r0
